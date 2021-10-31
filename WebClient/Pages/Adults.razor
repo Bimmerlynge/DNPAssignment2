@@ -1,0 +1,232 @@
+@page "/Adults"
+@attribute [Authorize(Policy = "MustBeLoggedIn")]
+@using System.Text.RegularExpressions
+@using WebClient.Models
+@using WebClient.RestClient
+
+@inject IRestClient RestClient
+
+
+<h3>Adults</h3>
+
+<p>
+    Filter by
+    <select class="selectpicker" @onchange="@((arg) => UpdateFilterOption(arg))">
+        <option>First Name</option>
+        <option>Last Name</option>
+        <option>Age</option>
+        <option>Hair Color</option>
+        <option>Eye Color</option>
+        <option>Weight</option>
+        <option>Height</option>
+        <option>Sex</option>
+        <option>Job Title</option>
+        <option>Salary</option>
+    </select>:
+    @switch (filterOption)
+    {
+        case "FirstName":
+        case "LastName":
+        case "HairColor":
+        case "Sex":
+        case "EyeColor":
+            <input type="text"
+                   @oninput="@((arg) => FilterByText(arg))"
+                   style="width:100px"/>
+            break;
+        case "JobTitle": //  Måske lav
+            <p>No implementation yet. Sorry.</p>
+            break;
+        case "Age":
+        case "Weight":
+        case "Height":
+        case "Salary":
+            <input type="text" placeholder="Minimum value" @oninput="@((arg) => FilterByMin(arg))"/>
+            <input type="text" placeholder="Set upper limit" @oninput="@((arg) => FilterByMax(arg))"/>
+            break;
+    }
+</p>
+
+@if (adultsToShow == null)
+{
+    <em>Loading...</em>
+}
+else if (!adultsToShow.Any())
+{
+    <em>No adults in the list. Add some.</em>
+}
+else
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Age</th>
+            <th>Hair Color</th>
+            <th>Eye Color</th>
+            <th>Weight</th>
+            <th>Height</th>
+            <th>Sex</th>
+            <th>Job title</th>
+            <th>Salary</th>
+            <AuthorizeView Policy="SecurityLevel10">
+                <th>Delete</th>
+            </AuthorizeView>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var adult in adultsToShow)
+        {
+            <tr>
+                <td>@adult.FirstName</td>
+                <td>@adult.LastName</td>
+                <td>@adult.Age</td>
+                <td>@adult.HairColor</td>
+                <td>@adult.EyeColor</td>
+                <td>@adult.Weight</td>
+                <td>@adult.Height</td>
+                <td>@adult.Sex</td>
+                <td>@adult.JobTitle.JobTitle</td>
+                <td>@adult.JobTitle.Salary</td>
+                <AuthorizeView Policy="SecurityLevel10">
+                    <td>
+                        <button @onclick="@(() => RemoveAdult(@adult.Id))">
+                            <i class="oi oi-trash" style="color:red"/>
+                        </button>
+                    </td>
+                </AuthorizeView>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+
+
+
+@code {
+    private IList<Adult> allAdult;
+    private IList<Adult> adultsToShow;
+    private string filterOption;
+    private string filterByText;
+    private float[] filterByNumbers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        allAdult = await RestClient.GetAdults();
+        adultsToShow = allAdult;
+        filterOption = "FirstName";
+    }
+
+    private void RemoveAdult(int adultId)
+    {
+        Adult adultToRemove = allAdult.First(a => a.Id == adultId);
+       
+        allAdult.Remove(adultToRemove);
+      
+
+        adultsToShow.Remove(adultToRemove);
+       
+        RestClient.Remove(adultId);
+    }
+
+    private void UpdateFilterOption(ChangeEventArgs arg)
+    {
+        filterOption = (string) arg.Value;
+        filterOption = Regex.Replace(filterOption, @" ", "");
+    }
+
+    private string GetPropertyValueType(Adult adult, string property)
+    {
+        string type = adult.GetType().GetProperty(property).GetValue(adult).GetType().ToString();
+        return type;
+    }
+
+    private dynamic GetPropertyValue(Adult adult, string property)
+    {
+        return adult.GetType().GetProperty(property).GetValue(adult);
+    }
+
+
+    private void FilterByText(ChangeEventArgs eventArgs)
+    {
+        filterByText = String.Empty;
+        try
+        {
+            filterByText = ((string) eventArgs.Value).ToLower();
+        }
+        catch (Exception e){}
+        Filter();
+    }
+
+    private void Filter()
+    {
+    // I tilfælde af at du læser koden Troels. Denne metode blev lidt rodet at kigge på og tænkte at køre lidt SOLID indover.
+    // Min umiddelbare plan ville være state/strategy pattern. Til det har jeg dog et spørgsmål, er det state pattern eller strategy pattern her?
+    // Mit første gæt ville være strategy pattern, da vi vel ikke som sådan ændre programmets adfærd? Det er stadig lidt utydeligt
+    // for mig hvornår man skelner mellem de to.
+    // Jeg er allerede med på at de to patterns kan implementeres på samme måde og det bare er terminologi.
+        float[] toFilterBy = filterByNumbers;
+        if (toFilterBy?[0] > 0 && toFilterBy[1] < toFilterBy[0] && filterOption.Equals("Salary"))
+        {
+            adultsToShow = allAdult.Where(adult =>
+                adult.JobTitle.Salary >= toFilterBy[0]
+                ).ToList();
+        }
+        else if (toFilterBy?[1] > 0 && filterOption.Equals("Salary"))
+        {
+            adultsToShow = allAdult.Where(adult =>
+                adult.JobTitle.Salary <= toFilterBy[1]
+                && adult.JobTitle.Salary >= toFilterBy[0]
+                ).ToList();
+        }
+        else if (toFilterBy?[0] > 0 && toFilterBy[1] < toFilterBy[0])
+        {
+            adultsToShow = allAdult.Where(adult =>
+                Convert.ChangeType(GetPropertyValue(adult, filterOption), Type.GetType(GetPropertyValueType(adult, filterOption))) >= toFilterBy[0]
+                ).
+                ToList();
+        }
+        else if (toFilterBy?[1] > 0 && toFilterBy[0] == null)
+        {
+            adultsToShow = allAdult.Where(adult =>
+                Convert.ChangeType(GetPropertyValue(adult, filterOption), Type.GetType(GetPropertyValueType(adult, filterOption))) <= toFilterBy[1]
+                && Convert.ChangeType(GetPropertyValue(adult, filterOption), Type.GetType(GetPropertyValueType(adult, filterOption))) >= toFilterBy[0]
+                ).
+                ToList();
+        }
+        else if (toFilterBy == null)
+        {
+            adultsToShow = allAdult.Where(adult =>
+                ((string) GetPropertyValue(adult, filterOption)).ToLower().StartsWith(filterByText)
+                ).ToList();
+        }
+    }
+
+
+    private void FilterByMin(ChangeEventArgs eventArgs)
+    {
+        if (filterByNumbers == null)
+            filterByNumbers = new float[2];
+        try
+        {
+            filterByNumbers[0] = float.Parse(eventArgs.Value.ToString());
+        }
+        catch (Exception e){}
+        Filter();
+    }
+
+    private void FilterByMax(ChangeEventArgs eventArgs)
+    {
+        if (filterByNumbers == null)
+            filterByNumbers = new float[2];
+        try
+        {
+            filterByNumbers[1] = float.Parse(eventArgs.Value.ToString());
+        }
+        catch (Exception e){}
+        Filter();
+    }
+
+}

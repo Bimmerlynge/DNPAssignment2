@@ -1,0 +1,74 @@
+@page "/AddAdult"
+@attribute [Authorize (Policy = "SecurityLevel10")]
+@using Microsoft.AspNetCore.Components
+@using WebClient.Models
+@using WebClient.RestClient
+
+@inject IRestClient RestClient
+@inject NavigationManager NavigationManager
+
+<h3>AddAdult</h3>
+<EditForm Model="newAdultItem" OnValidSubmit="@AddNewAdult">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+    <div class="form-group">
+        First Name:
+        <InputText @bind-Value="newAdultItem.FirstName"/>
+    </div>
+    <div class="form-group">
+        Last Name:
+        <InputText @bind-Value="newAdultItem.LastName"/>
+    </div>
+    <div class="form-group">
+        Age:
+        <InputNumber @bind-Value="newAdultItem.Age"/>
+    </div>
+    <div class="form-group">
+        Hair Color:
+        <InputText @bind-Value="newAdultItem.HairColor"/>
+    </div>
+    <div class="form-group">
+        Eye Color:
+        <InputText @bind-Value="newAdultItem.EyeColor"/>
+    </div>
+    <div class="form-group">
+        Weight:
+        <InputNumber @bind-Value="newAdultItem.Weight"/>
+    </div>
+    <div class="form-group">
+        Height:
+        <InputNumber @bind-Value="newAdultItem.Height"/>
+    </div>
+    <div class="form-group">
+        Sex:
+        <InputText @bind-Value="newAdultItem.Sex"/>
+    </div>
+    <div class="form-group">
+        Job Title:
+        <InputText @bind-Value="newJobItem.JobTitle"/>
+    </div>
+    <div class="form-group">
+        Salary:
+        <InputNumber @bind-Value="newJobItem.Salary"/>
+    </div>
+    
+
+    <p class="actions">
+        <button class="btn btn-outline-dark" type="submit">Add</button>
+    </p>
+</EditForm>
+
+
+@code {
+    private Adult newAdultItem = new Adult();
+    private Job newJobItem = new Job();
+
+
+    private async Task AddNewAdult()
+    {
+        newAdultItem.JobTitle = newJobItem;
+        await RestClient.AddAdultAsync(newAdultItem);
+        NavigationManager.NavigateTo("/Adults");
+    }
+
+}
