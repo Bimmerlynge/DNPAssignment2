@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.DataAcces;
 using WebAPI.Models;
 using WebAPI.Persistence;
-using WebAPI.Service;
 
 namespace WebAPI.Controllers
 {
@@ -12,11 +12,11 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class AdultsController : ControllerBase
     {
-        private IAdultService service;
+        private IAdultDAO dao;
 
-        public AdultsController(IAdultService service)
+        public AdultsController(IAdultDAO dao)
         {
-            this.service = service;
+            this.dao = dao;
             
         }
 
@@ -25,7 +25,7 @@ namespace WebAPI.Controllers
         {
             try
             {
-                IList<Adult> adults = await service.GetAdultsAsync();
+                IList<Adult> adults = await dao.GetAdultsAsync();
                 return Ok(adults);
             }
             catch (Exception e)
@@ -40,8 +40,9 @@ namespace WebAPI.Controllers
         {
             try
             {
-                Adult added = await service.AddAdultAsync(adult);
-                return Created($"/{added.Id}", added);
+                Console.WriteLine("Får vi en adult: " + adult.FirstName);
+                await dao.AddAdultAsync(adult);
+                return Ok();
             }
             catch (Exception e)
             {
@@ -56,7 +57,8 @@ namespace WebAPI.Controllers
         {
             try
             {
-                await service.RemoveAdultAsync(id);
+                Adult adult = new Adult {Id = id};
+                await dao.RemoveAdultAsync(adult);
                 return Ok();
             }
             catch (Exception e)

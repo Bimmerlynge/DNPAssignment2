@@ -1,6 +1,7 @@
 [
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Mascot",
       "Salary": 99821
     },
@@ -16,6 +17,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Front End Web Developer",
       "Salary": 66408
     },
@@ -31,6 +33,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Business Development Manager",
       "Salary": 71456
     },
@@ -46,6 +49,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Skin Care Specialist",
       "Salary": 20545
     },
@@ -61,6 +65,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Vice Principal",
       "Salary": 72901
     },
@@ -76,6 +81,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Teacher",
       "Salary": 91588
     },
@@ -91,6 +97,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Service Advisor",
       "Salary": 72532
     },
@@ -106,6 +113,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Janitor",
       "Salary": 61437
     },
@@ -121,6 +129,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Office Clerk",
       "Salary": 41332
     },
@@ -136,6 +145,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Writer",
       "Salary": 63392
     },
@@ -151,6 +161,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Casino Host",
       "Salary": 35445
     },
@@ -166,6 +177,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Nurse",
       "Salary": 36813
     },
@@ -181,6 +193,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Web Administrator",
       "Salary": 44759
     },
@@ -196,6 +209,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Science Teacher",
       "Salary": 55346
     },
@@ -211,6 +225,7 @@
   },
   {
     "JobTitle": {
+      "Id": 0,
       "JobTitle": "Call Center Agent",
       "Salary": 20308
     },
@@ -222,6 +237,22 @@
     "Age": 44,
     "Weight": 81.8,
     "Height": 172,
+    "Sex": "M"
+  },
+  {
+    "JobTitle": {
+      "Id": 0,
+      "JobTitle": "Cop",
+      "Salary": 6969
+    },
+    "Id": 15,
+    "FirstName": "J\u00F8rn",
+    "LastName": "Bentsen",
+    "HairColor": "Blue",
+    "EyeColor": "Brown",
+    "Age": 54,
+    "Weight": 65,
+    "Height": 176,
     "Sex": "M"
   }
 ]

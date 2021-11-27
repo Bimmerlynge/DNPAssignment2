@@ -9,7 +9,7 @@ namespace WebAPI.Persistence
 {
     public class FileContext : IFileContext
     {
-        public IList<Family> Families { get; private set; }
+        //public IList<Family> Families { get; private set; }
         public IList<Adult> Adults { get; private set; }
 
         private readonly string familiesFile = "families.json";
@@ -19,7 +19,7 @@ namespace WebAPI.Persistence
         
         public FileContext()
         {
-            Families = File.Exists(familiesFile) ? ReadData<Family>(familiesFile) : new List<Family>();
+           // Families = File.Exists(familiesFile) ? ReadData<Family>(familiesFile) : new List<Family>();
             Adults = File.Exists(adultsFile) ? ReadData<Adult>(adultsFile) : new List<Adult>();
         }
 

@@ -1,8 +1,8 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using WebAPI.DataAcces;
 using WebAPI.Models;
-using WebAPI.Service;
 
 namespace WebAPI.Controllers
 {
@@ -10,11 +10,11 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
-        private IUserService service;
+        private IUserDAO dao;
 
-        public UserController(IUserService service)
+        public UserController(IUserDAO dao)
         {
-            this.service = service;
+            this.dao = dao;
         }
         
         [HttpGet]
@@ -22,7 +22,8 @@ namespace WebAPI.Controllers
         {
             try
             {
-                User validate = await service.ValidateUserAsync(username, password);
+                User user = new User {UserName = username, Password = password};
+                User validate = await dao.ValidateUserAsync(user);
                 return Ok(validate);
             }
             catch (Exception e)
